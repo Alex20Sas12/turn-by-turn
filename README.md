@@ -17,6 +17,12 @@ it's your turn. If they stall for **3 days**, you claim the win by timeout.
   win detection is enforced by the EVM, not by a server you have to trust.
 - **Draws are real.** A full 42-disc board with no connect-four ends as a draw
   (test-covered with a hand-computed full-board sequence).
+- **Meera never buys ETH.** An ERC-4337 verifying paymaster
+  (`src/TurnByTurnPaymaster.sol`, deployed & funded on Base Sepolia) sponsors
+  game moves: a backend signer approves UserOps that call only the game's
+  selectors (`createGame / joinGame / play / claimTimeout`), rate-limited to
+  8 sponsored moves per player per day. Players with a smart account play
+  gasless; everyone else pays a fraction of a cent per move.
 
 ## Why it answers the brief
 
@@ -32,13 +38,16 @@ The timeout mechanic is what makes asynchrony fair — a stalled game is a lost 
   - Board packed into 2 bits per cell (`uint256[3]` covers all 42 cells).
   - `createGame`, `joinGame`, `play`, `claimTimeout` (3 days), `cancelGame` (while open).
   - Views: `boardOf` (42 bytes), `openGames` (lobby), `gamesOf` (per-player history).
-- **26 Foundry tests, all passing** — lifecycle, turn enforcement, all four win
-  directions, no-false-positive check, full-board draw, timeout claims, fuzz run
-  (256 random games never brick the state machine).
+- `src/TurnByTurnPaymaster.sol` — ERC-4337 verifying paymaster for gasless play
+  (whitelisted game selectors, per-player daily rate limit, backend-signed approvals).
+- **33 Foundry tests, all passing** — lifecycle, turn enforcement, all four win
+  directions, no-false-positive check, full-board draw, timeout claims, paymaster
+  signature/selector/rate-limit checks, fuzz run (256 random games never brick
+  the state machine).
 
 ```
 forge test
-# Ran 3 test suites: 26 tests passed, 0 failed
+# Ran 4 test suites: 33 tests passed, 0 failed
 ```
 
 ## Live demo
