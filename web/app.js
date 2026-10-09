@@ -1,6 +1,6 @@
 // Turn by Turn — frontend. ethers v6, no build step.
 // Contract address is injected after deploy into this file as CONTRACT.
-const CONTRACT = "0x0000000000000000000000000000000000000000"; // filled by deploy
+const CONTRACT = "0x8621067F8de51DEE4E215a6A9F7E668C0333cD7C"; // Base Sepolia
 const CHAIN_ID = 84532n; // Base Sepolia
 const RPC = "https://sepolia.base.org";
 const EXPLORER = "https://sepolia.basescan.org";
